@@ -3,6 +3,7 @@ package org.example;
 import java.util.concurrent.BlockingQueue;
 
 public class Consultant implements Runnable{
+    // this is the consumer class of the project
     private final int id;
     private final String speciality;
     private final BlockingQueue<Patient> queue;
