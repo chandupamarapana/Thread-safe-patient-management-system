@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public class Patient {
     private final int id;
-    private final  LocalDateTime arrivalTime;
+    private final  long arrivalTime;
     private final String specialty;
 
     public Patient (int id, long arrivalTime, String specialty){
@@ -17,7 +17,7 @@ public class Patient {
         return id;
     }
 
-    public LocalDateTime getArrivalTime() {
+    public long getArrivalTime() {
         return arrivalTime;
     }
 
