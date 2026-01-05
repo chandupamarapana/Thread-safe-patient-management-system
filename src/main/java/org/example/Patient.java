@@ -7,7 +7,7 @@ public class Patient {
     private final  LocalDateTime arrivalTime;
     private final String specialty;
 
-    public Patient (int id, LocalDateTime arrivalTime, String specialty){
+    public Patient (int id, long arrivalTime, String specialty){
         this.id = id;
         this.arrivalTime = arrivalTime;
         this.specialty = specialty;
