@@ -24,9 +24,10 @@ public class PatientArrivalSystem implements Runnable{
     }
 
     public void run(){
+        System.out.println("Patient arrival generator started. ");
         while(running){
             try{
-                Thread.sleep(500 + random.nextInt(1000)); //random arrivals
+                Thread.sleep(500 + random.nextInt(1000)); //random arrival intervals 500ms to 1500ms
 
                 String speciality = pickRandomSpeciality();
                 Patient patient = new Patient(counter.incrementAndGet(),
@@ -36,10 +37,11 @@ public class PatientArrivalSystem implements Runnable{
 
                 System.out.println("Patient "+ patient.getId() + " arrived for "+speciality);
             } catch (InterruptedException e){
-                e.printStackTrace();
+                System.out.println("Patient arrival interrupted.");
                 break;
             }
         }
+        System.out.println("Patient arrival generator stopped, Total patients: "+ counter.get());
     }
     public String pickRandomSpeciality(){
         int x = random.nextInt(3);

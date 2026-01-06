@@ -6,26 +6,31 @@ public class ShiftManager {
     private final List<Consultant> dayShiftConsultant;
     private final List<Consultant> nightShiftConsultant;
     private final long shiftDurationMs;
+    private final int maxShifts;
 
     private boolean isDayShift = true;
     private int shiftNumber =0 ;
 
     private Thread[] currentThreads;
 
-    public ShiftManager(List<Consultant> dayShiftConsultant, List<Consultant> nightShiftConsultant, Long shiftDurationMs ){
+    public ShiftManager(List<Consultant> dayShiftConsultant, List<Consultant> nightShiftConsultant, Long shiftDurationMs, int maxShifts ){
         this.dayShiftConsultant = dayShiftConsultant;
         this.nightShiftConsultant = nightShiftConsultant;
         this.shiftDurationMs = shiftDurationMs;
+        this.maxShifts = maxShifts;
 
     }
     //start the continuous shift rotation
     public void start() throws InterruptedException{
         startShift(dayShiftConsultant, "DAY");
 
-        while(true){
+        while(shiftNumber < maxShifts){
             Thread.sleep(shiftDurationMs);
             switchSwift();
         }
+        endCurrentShift();
+        System.out.println("Simulation completed ");
+        System.out.println("Total shift completed "+ shiftNumber);
     }
     //starts the shift by creating the Consultants threads
     public void startShift (List<Consultant> consultants, String shiftType){
