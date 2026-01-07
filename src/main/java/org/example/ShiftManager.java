@@ -3,76 +3,83 @@ package org.example;
 import java.util.List;
 
 public class ShiftManager {
-    private final List<Consultant> dayShiftConsultant;
-    private final List<Consultant> nightShiftConsultant;
+    private final List<Consultant> dayShiftConsultants;
+    private final List<Consultant> nightShiftConsultants;
     private final long shiftDurationMs;
     private final int maxShifts;
 
     private boolean isDayShift = true;
-    private int shiftNumber =0 ;
+    private int shiftNumber = 0;
 
     private Thread[] currentThreads;
 
-    public ShiftManager(List<Consultant> dayShiftConsultant, List<Consultant> nightShiftConsultant, Long shiftDurationMs, int maxShifts ){
-        this.dayShiftConsultant = dayShiftConsultant;
-        this.nightShiftConsultant = nightShiftConsultant;
+    public ShiftManager(List<Consultant> dayShiftConsultants,
+                        List<Consultant> nightShiftConsultants,
+                        long shiftDurationMs,
+                        int maxShifts) {
+        this.dayShiftConsultants = dayShiftConsultants;
+        this.nightShiftConsultants = nightShiftConsultants;
         this.shiftDurationMs = shiftDurationMs;
         this.maxShifts = maxShifts;
-
     }
-    //start the continuous shift rotation
-    public void start() throws InterruptedException{
-        startShift(dayShiftConsultant, "DAY");
 
-        while(shiftNumber < maxShifts){
+    public void start() throws InterruptedException {
+        for (int i = 0; i < maxShifts; i++) {
+
+            List<Consultant> consultants = isDayShift ? dayShiftConsultants : nightShiftConsultants;
+            String type = isDayShift ? "DAY" : "NIGHT";
+
+            startShift(consultants, type);
+
             Thread.sleep(shiftDurationMs);
-            switchSwift();
+
+            endCurrentShift();
+
+            isDayShift = !isDayShift;
         }
-        endCurrentShift();
-        System.out.println("Simulation completed ");
-        System.out.println("Total shift completed "+ shiftNumber);
+
+        System.out.println("Simulation completed.");
+        System.out.println("Total shifts completed: " + maxShifts);
     }
-    //starts the shift by creating the Consultants threads
-    public void startShift (List<Consultant> consultants, String shiftType){
-        shiftNumber ++;
-        System.out.println();
-        System.out.println("Starting the " + shiftType + " Shift number "+ shiftNumber + ".");
-        System.out.println();
+
+
+    private void startShift(List<Consultant> consultants, String shiftType) {
+        shiftNumber++;
+        System.out.println("\nStarting " + shiftType + " shift #" + shiftNumber + "\n");
 
         currentThreads = new Thread[consultants.size()];
 
-        for(int i=0; i<consultants.size(); i++){
-            currentThreads[i] = new Thread(consultants.get(i));
-            currentThreads[i].start();
+        for (int i = 0; i < consultants.size(); i++) {
+            Consultant c = consultants.get(i);
+            c.beginShift(); // IMPORTANT: reset flag for this shift
+            Thread t = new Thread(c, shiftType + "-Consultant-" + c.getId());
+            currentThreads[i] = t;
+            t.start();
         }
     }
 
-    //the methods stop the current shift and starts the next one
-    public void switchSwift() throws InterruptedException {
+    private void switchShift() throws InterruptedException {
         endCurrentShift();
 
         isDayShift = !isDayShift;
 
-        if (isDayShift) {
-            startShift(dayShiftConsultant, "DAY");
-        } else {
-            startShift(nightShiftConsultant, "NIGHT");
-        }
+        if (isDayShift) startShift(dayShiftConsultants, "DAY");
+        else startShift(nightShiftConsultants, "NIGHT");
     }
-    //signalling consultants to finish work and wait for them
-    public void endCurrentShift() throws InterruptedException{
-        System.out.println(" Ending the current shift");
 
-        List<Consultant> currentConsultants = isDayShift ? dayShiftConsultant : nightShiftConsultant ;
+    private void endCurrentShift() throws InterruptedException {
+        System.out.println("Ending current shift...");
 
-        //signalling consultants to stop accepting patients
-        for (Consultant consultant : currentConsultants){
-            consultant.stopShift();
+        List<Consultant> currentConsultants = isDayShift ? dayShiftConsultants : nightShiftConsultants;
+
+        for (Consultant c : currentConsultants) {
+            c.stopShift();
         }
-        //wait for all the consultants to finish
-        for (Thread t : currentThreads){
-            t.join();
+
+        for (Thread t : currentThreads) {
+            t.join(); // will not hang now
         }
-        System.out.println("All the consultants have stopped there work ");
+
+        System.out.println("All consultants stopped.\n");
     }
 }

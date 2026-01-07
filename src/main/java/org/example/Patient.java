@@ -1,16 +1,14 @@
 package org.example;
 
-import java.time.LocalDateTime;
-
 public class Patient {
     private final int id;
-    private final  long arrivalTime;
-    private final String specialty;
+    private final long arrivalTime;
+    private final Speciality speciality;
 
-    public Patient (int id, long arrivalTime, String specialty){
+    public Patient(int id, long arrivalTime, Speciality speciality) {
         this.id = id;
         this.arrivalTime = arrivalTime;
-        this.specialty = specialty;
+        this.speciality = speciality;
     }
 
     public int getId() {
@@ -21,8 +19,7 @@ public class Patient {
         return arrivalTime;
     }
 
-    public String getSpecialty() {
-        return specialty;
+    public Speciality getSpeciality() {
+        return speciality;
     }
-
 }
