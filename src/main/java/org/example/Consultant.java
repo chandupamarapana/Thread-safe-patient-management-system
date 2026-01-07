@@ -8,13 +8,13 @@ public class Consultant implements Runnable {
 
     private final int id;
     private final Speciality speciality;
-    private final BlockingQueue<Patient> queue;
+    private final BlockingQueue<Patient> queue; // Shared resource used by both producer and consumer threads
 
     private final Random random = new Random();
-    private volatile boolean onShift = false;
+    private volatile boolean onShift = false;  // Volatile ensures visibility of shift stop signal across threads
 
     private int patientsServed = 0;
-
+//Consultant is the CONSUMER in the Producer–Consumer pattern.
     public Consultant(int id, Speciality speciality, BlockingQueue<Patient> queue) {
         this.id = id;
         this.speciality = speciality;

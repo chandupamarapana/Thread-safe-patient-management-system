@@ -1,12 +1,12 @@
 package org.example;
 
 import java.util.List;
-
+//ShiftManager controls shift rotation. //It manages consultant threads (start/stop) for each shift
 public class ShiftManager {
     private final List<Consultant> dayShiftConsultants;
     private final List<Consultant> nightShiftConsultants;
-    private final long shiftDurationMs;
-    private final int maxShifts;
+    private final long shiftDurationMs; // Simulation scale: e.g., 12 seconds represents a 12-hour shift
+    private final int maxShifts;  // Total number of shifts to simulate (e.g., 2 = day + night)
 
     private boolean isDayShift = true;
     private int shiftNumber = 0;
@@ -77,7 +77,7 @@ public class ShiftManager {
         }
 
         for (Thread t : currentThreads) {
-            t.join(); // will not hang now
+            t.join();
         }
 
         System.out.println("All consultants stopped.\n");

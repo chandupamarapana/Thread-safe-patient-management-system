@@ -5,11 +5,11 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class PatientArrivalSystem implements Runnable {
-
+    // Shared resources: thread-safe queues per speciality
     private final BlockingQueue<Patient> paediatricQueue;
     private final BlockingQueue<Patient> surgeryQueue;
     private final BlockingQueue<Patient> cardiologyQueue;
-
+    // AtomicInteger ensures ID generation is thread-safe (even if multiple producers are added later)
     private final AtomicInteger counter = new AtomicInteger(0);
     private final Random random = new Random();
     private volatile boolean running = true;
@@ -25,11 +25,13 @@ public class PatientArrivalSystem implements Runnable {
     }
 
     @Override
+    // Keep producing while running == true
     public void run() {
         System.out.println("Patient arrival generator started.");
 
         while (running && !Thread.currentThread().isInterrupted()) {
             try {
+                // Random arrival interval: simulates unpredictable 24/7 patient arrivals
                 Thread.sleep(500 + random.nextInt(1000)); // 500ms to 1500ms
 
                 Speciality speciality = Speciality.random(random);
@@ -40,7 +42,7 @@ public class PatientArrivalSystem implements Runnable {
                 System.out.println("Patient " + patient.getId() + " arrived for " + speciality);
 
             } catch (InterruptedException e) {
-                Thread.currentThread().interrupt(); // keep interrupt status
+                Thread.currentThread().interrupt();
                 break;
             }
         }
